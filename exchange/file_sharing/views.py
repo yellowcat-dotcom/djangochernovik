@@ -1,5 +1,5 @@
 from django.http import HttpResponse, HttpResponseNotFound, Http404
-from django.shortcuts import render
+from django.shortcuts import render, get_object_or_404
 from .models import Record, Discipline
 
 menu = [{'title': "О сайте", 'url_name': 'about'},
@@ -37,7 +37,14 @@ def login(request):
 
 
 def show_post(request, post_id):
-    return HttpResponse(f'отображение поста с id={post_id}')
+    post = get_object_or_404(Record, pk=post_id)
+    context = {
+        'post': post,
+        'menu': menu,
+        'title': post.description,
+        'discipline_selected': post.discipline_id,
+    }
+    return render(request, 'file_sharing/post.html', context=context)
 
 
 def show_discipline(request, discipline_id):
