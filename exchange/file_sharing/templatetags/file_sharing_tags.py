@@ -20,3 +20,12 @@ def show_disciplines(sort=None, discipline_selected=0):
     else:
         disciplines = Discipline.objects.order_by(sort)
     return {"disciplines": disciplines, 'discipline_selected': discipline_selected}
+
+
+@register.filter
+def file_extension(file_name):
+    extensions = ['.pdf', '.doc', '.docx', '.xls', '.xlsx', '.jpg', '.jpeg', '.png', '.pptx', '.jfif']
+    for extension in extensions:
+        if file_name.endswith(extension):
+            return extension
+    return None
