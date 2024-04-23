@@ -1,7 +1,0 @@
-{% for d in disciplines %}
-	{% if d.pk == discipline_selected %}
-		<li class="selected">{{d.name}}</li>
-	{% else %}
-		<li><a href="{{ d.get_absolute_url }}"> {{d.name}}</a></li>
-	{% endif %}
-{% endfor %}
