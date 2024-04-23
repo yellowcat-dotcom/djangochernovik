@@ -38,7 +38,7 @@ class Discipline(models.Model):
         return self.name
 
     def get_absolute_url(self):
-        return reverse('discipline', kwargs={'discipline_id': self.pk})
+        return reverse('discipline', kwargs={'discipline_slug': self.slug})
 
     class Meta:
         verbose_name = 'Дисциплина'
