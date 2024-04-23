@@ -32,6 +32,7 @@ class Group(models.Model):
 
 class Discipline(models.Model):
     name = models.CharField(max_length=100, unique=True, verbose_name='Название', db_index=True)
+    slug = models.SlugField(max_length=255, unique=True, db_index=True, verbose_name='URL')
 
     def __str__(self):
         return self.name
@@ -63,6 +64,7 @@ class Record(models.Model):
     description = models.TextField(blank=True, null=True, verbose_name='Описание')
     group = models.ManyToManyField(Group, verbose_name='Группа')
     teacher = models.ForeignKey(Teacher, on_delete=models.CASCADE, verbose_name='Преподаватель')
+    slug = models.SlugField(max_length=255, unique=True, db_index=True, verbose_name='URL')
 
     def formatted_date(self):
         return timezone.localtime(self.date).strftime('%d.%m.%Y %H:%M')
@@ -71,7 +73,7 @@ class Record(models.Model):
         return f'{self.discipline} - {self.group} - {self.formatted_date()}'
 
     def get_absolute_url(self):
-        return reverse('post', kwargs={'post_id': self.pk})
+        return reverse('post', kwargs={'post_slug': self.slug})
 
     class Meta:
         verbose_name = 'Запись'

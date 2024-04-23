@@ -36,8 +36,8 @@ def login(request):
     return HttpResponse('login')
 
 
-def show_post(request, post_id):
-    post = get_object_or_404(Record, pk=post_id)
+def show_post(request, post_slug):
+    post = get_object_or_404(Record, slug=post_slug)
     context = {
         'post': post,
         'menu': menu,

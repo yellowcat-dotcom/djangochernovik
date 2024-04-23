@@ -1,5 +1,10 @@
+import datetime
+
 from django.contrib import admin
+from django.forms import TextInput
 from django.template.defaultfilters import truncatechars
+from django.utils.text import slugify
+from transliterate import translit
 
 from .models import *
 
@@ -24,6 +29,8 @@ class GroupAdmin(admin.ModelAdmin):
 class DisciplineAdmin(admin.ModelAdmin):
     list_display = ('name',)
     search_fields = ('name',)
+    prepopulated_fields = {'slug': ('name',)}
+
 
 
 class DisciplineTeacherAdmin(admin.ModelAdmin):
@@ -45,10 +52,11 @@ class FileInline(admin.StackedInline):  # (admin.StackedInline)
 class RecordAdmin(admin.ModelAdmin):
     inlines = [FileInline]
     fields = ('discipline', 'group', 'description')
-    list_display = ('discipline', 'teacher', 'date', 'get_group', 'short_description', 'display_files')
+    list_display = ('discipline', 'teacher', 'date', 'get_group', 'short_description', 'display_files', 'slug')
     search_fields = ('discipline__name',)
     list_display_links = ('discipline', 'teacher', 'date', 'get_group', 'short_description')
     list_filter = ('discipline', 'group', 'date')
+
 
     # Отображение группы
     def get_group(self, obj):
@@ -62,8 +70,25 @@ class RecordAdmin(admin.ModelAdmin):
         return ", ".join([file.__str__() for file in obj.files.all()])
 
     def save_model(self, request, obj, form, change):
-        if not change and request.user.is_authenticated and hasattr(request.user, 'teacher'):
+        if request.user.is_authenticated and hasattr(request.user, 'teacher'):
             obj.teacher = request.user.teacher
+
+            # Получение текущей даты и времени
+            current_datetime = datetime.datetime.now()
+
+            # Транслитерация имени преподавателя на латиницу
+            teacher_name = f"{translit(obj.teacher.user.last_name, 'ru', reversed=True)}-{translit(obj.teacher.user.first_name, 'ru', reversed=True)}-{translit(obj.teacher.father_name, 'ru', reversed=True)}"
+
+            # Транслитерация имени дисциплины на латиницу
+            discipline_slug = slugify(translit(obj.discipline.name, 'ru', reversed=True))
+
+            # Создание уникального слага на основе даты, времени, имени дисциплины и преподавателя
+            if obj.discipline:
+                date_slug = current_datetime.strftime('%Y-%m-%d')
+                time_slug = current_datetime.strftime('%H-%M-%S')
+                slug_text = f"{date_slug}-{time_slug}-{discipline_slug}_{teacher_name}"
+                obj.slug = slug_text
+
         super().save_model(request, obj, form, change)
 
     def get_queryset(self, request):
