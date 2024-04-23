@@ -24,7 +24,7 @@ def show_disciplines(sort=None, discipline_selected=0):
 
 @register.filter
 def file_extension(file_name):
-    extensions = ['.pdf', '.doc', '.docx', '.xls', '.xlsx', '.jpg', '.jpeg', '.png', '.pptx', '.jfif']
+    extensions = ['.pdf', '.doc', '.docx', '.xls', '.xlsx', '.jpg', '.jpeg', '.png', '.pptx', '.jfif', '.txt']
     for extension in extensions:
         if file_name.endswith(extension):
             return extension
