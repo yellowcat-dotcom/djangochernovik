@@ -1,0 +1,37 @@
+admin
+RECORD 
+
+fields = ('discipline', 'group', 'description', 'slug')
+list_display = ('discipline', 'teacher', 'date', 'get_group', 'short_description', 'display_files', 'slug')
+
+    def save_model(self, request, obj, form, change):
+        if request.user.is_authenticated and hasattr(request.user, 'teacher'):
+            obj.teacher = request.user.teacher
+
+            # Получение текущей даты и времени
+            current_datetime = datetime.datetime.now()
+
+            # Создание уникального слага на основе даты, времени и имени дисциплины
+            if obj.discipline and obj.teacher:
+                teacher_name = f"{obj.teacher.user.last_name} {obj.teacher.user.first_name} {obj.teacher.father_name}"
+                discipline_slug = slugify(obj.discipline.name)
+                date_slug = current_datetime.strftime('%Y-%m-%d')
+                time_slug = current_datetime.strftime('%H-%M-%S')
+                slug_text = f"{date_slug}-{time_slug}-{discipline_slug}-{teacher_name}"
+                obj.slug = slug_text
+
+        super().save_model(request, obj, form, change)
+
+
+
+
+models
+RECORD
+
+slug = models.SlugField(unique=True, max_length=200, blank=True)  # Добавление поля slug
+
+
+
+
+
+
