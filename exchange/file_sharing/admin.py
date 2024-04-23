@@ -86,6 +86,7 @@ class RecordAdmin(admin.ModelAdmin):
             # Создание уникального слага на основе даты, времени, имени дисциплины и преподавателя
             if obj.discipline:
                 date_slug = current_datetime.strftime('%Y-%m-%d')
+
                 time_slug = current_datetime.strftime('%H-%M-%S')
                 slug_text = f"{date_slug}-{time_slug}-{discipline_slug}_{teacher_name}"
                 obj.slug = slug_text
