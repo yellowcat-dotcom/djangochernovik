@@ -69,6 +69,7 @@ class RecordAdmin(admin.ModelAdmin):
     def display_files(self, obj):
         return ", ".join([file.__str__() for file in obj.files.all()])
 
+# метод для сохранения с автоматическим составлением слага
     def save_model(self, request, obj, form, change):
         if request.user.is_authenticated and hasattr(request.user, 'teacher'):
             obj.teacher = request.user.teacher
@@ -78,7 +79,7 @@ class RecordAdmin(admin.ModelAdmin):
 
             # Транслитерация имени преподавателя на латиницу
             teacher_name = f"{translit(obj.teacher.user.last_name, 'ru', reversed=True)}-{translit(obj.teacher.user.first_name, 'ru', reversed=True)}-{translit(obj.teacher.father_name, 'ru', reversed=True)}"
-
+            teacher_name = teacher_name.replace("'", "")
             # Транслитерация имени дисциплины на латиницу
             discipline_slug = slugify(translit(obj.discipline.name, 'ru', reversed=True))
 
